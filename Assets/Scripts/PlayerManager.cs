@@ -19,6 +19,10 @@ public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
         _players.Add(playerid);
         Debug.Log($"player{playerid.Id} joined the game");
         UpdateLobbyText();
+        if (_players.Count == maxPlayers)
+        {
+            QuizManager.Instance.DisplayStory(QuizManager.Instance.currentQuestion);
+        }
     }
 
     private void UpdateLobbyText()
@@ -28,6 +32,15 @@ public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
         {
             playersInLobbyText.text += $"\n player {playerid.Id}";
         }
+    }
+
+    public PlayerId GetPlayerId(int ownerID)
+    {
+        foreach (PlayerId playerid in _players)
+        {
+            if (playerid.OwnerId == ownerID) return playerid;
+        }
+        return null;
     }
 
     public void PlayerLeft(PlayerId playerid)
