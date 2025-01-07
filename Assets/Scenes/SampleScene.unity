@@ -302,7 +302,7 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 450207985}
   _networkObjectCache: {fileID: 0}
-  <maxPlayers>k__BackingField: 1
+  <maxPlayers>k__BackingField: 2
   playersInLobbyText: {fileID: 698917554}
 --- !u!1001 &508482057
 PrefabInstance:
@@ -718,8 +718,8 @@ MonoBehaviour:
   questions:
   - question: Wie is het dikst?
     audioclips:
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 8300000, guid: 24bdabf1534c38847a326046101353c7, type: 3}
+    - {fileID: 8300000, guid: a02bf1c548cf84f4fa952ce5369adc48, type: 3}
     answers:
     - Ik
     - Jij
@@ -729,8 +729,8 @@ MonoBehaviour:
     storyDisplayTime: 10
   - question: Joost is...
     audioclips:
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 8300000, guid: 58ca78053860a89408cb5ffb87358cf2, type: 3}
+    - {fileID: 8300000, guid: c7d77733b40af58479f9354ceb28cf2b, type: 3}
     answers:
     - Gezellig
     - Een alcoholist
@@ -740,6 +740,12 @@ MonoBehaviour:
     storyDisplayTime: 10
   answeringTime: 10
   questionText: {fileID: 1667639690}
+  OnShowStory:
+    m_PersistentCalls:
+      m_Calls: []
+  OnShowQuestion:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1475796532
 GameObject:
   m_ObjectHideFlags: 0

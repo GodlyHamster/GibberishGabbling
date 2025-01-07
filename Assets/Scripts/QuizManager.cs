@@ -1,7 +1,9 @@
 using FishNet.Object;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class QuizManager : AbstractNetworkSingleton<QuizManager>
 {
@@ -18,11 +20,25 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
     [SerializeField]
     private TextMeshProUGUI questionText;
 
+    private List<PlayerAudio> playerAudioList = new List<PlayerAudio>();
+
     private Dictionary<PlayerId, int> playerAnswers = new Dictionary<PlayerId, int>();
 
     public int currentQuestion { get; private set; } = 0;
 
-    public void DisplayStory(int questionNumber)
+    public UnityEvent OnShowStory = new UnityEvent();
+    public UnityEvent OnShowQuestion = new UnityEvent();
+
+    public void StartGame()
+    {
+        foreach (var player in PlayerManager.Instance.currentPlayers)
+        {
+            playerAudioList.Add(player.gameObject.GetComponent<PlayerAudio>());
+        }
+        DisplayStory(currentQuestion);
+    }
+
+    private void DisplayStory(int questionNumber)
     {
         if (questionNumber >= questions.Count) return;
 
@@ -30,6 +46,8 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         countDown = questions[questionNumber].storyDisplayTime;
         currentlyOnQuestion = false;
         doCountDown = true;
+        OnShowStory.Invoke();
+        StartCoroutine(WaitUntilAllClipsFinished());
     }
 
     private void DisplayQuestion(int questionNumber)
@@ -44,6 +62,8 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         countDown = answeringTime;
         currentlyOnQuestion = true;
         doCountDown = true;
+        OnShowQuestion.Invoke();
+        StartCoroutine(WaitUntilAllClipsFinished());
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -71,6 +91,11 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         return questions[currentQuestion].audioclips[playerId.Id];
     }
 
+    public AudioClip GetStoryAudio(PlayerId playerId)
+    {
+        return questions[currentQuestion].audioclips[playerId.Id];
+    }
+
     private bool AnsweredQuestionCorrectly()
     {
         if (playerAnswers.Count == 0 ) return false;
@@ -90,26 +115,21 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         return false;
     }
 
-    private void Update()
+    private IEnumerator WaitUntilAllClipsFinished()
     {
-        if (currentQuestion >= questions.Count) return;
-        if (doCountDown)
+        Debug.Log("waiting");
+        yield return new WaitUntil(() => playerAudioList.TrueForAll(a => a.finishedAudio));
+        Debug.Log("finished waiting");
+
+        if (currentlyOnQuestion)
         {
-            countDown -= Time.deltaTime;
+            Debug.Log(AnsweredQuestionCorrectly());
+            currentQuestion++;
+            DisplayStory(currentQuestion);
         }
-        if (countDown < 0)
+        else
         {
-            doCountDown = false;
-            if (currentlyOnQuestion)
-            {
-                Debug.Log(AnsweredQuestionCorrectly());
-                currentQuestion++;
-                DisplayStory(currentQuestion);
-            }
-            else
-            {
-                DisplayQuestion(currentQuestion);
-            }
+            DisplayQuestion(currentQuestion);
         }
     }
 }

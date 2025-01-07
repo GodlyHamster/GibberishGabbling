@@ -35,7 +35,7 @@ public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
         UpdateLobbyText();
         if (_players.Count == maxPlayers)
         {
-            QuizManager.Instance.DisplayStory(QuizManager.Instance.currentQuestion);
+            QuizManager.Instance.StartGame();
         }
     }
 

@@ -6,8 +6,6 @@ public class PlayerInteraction : NetworkBehaviour
 {
     PlayerId playerId;
 
-    private AudioSource _questionAudio;
-
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -15,7 +13,6 @@ public class PlayerInteraction : NetworkBehaviour
         {
             this.enabled = false;
         }
-        _questionAudio = GetComponent<AudioSource>();
     }
 
     private void Start()
