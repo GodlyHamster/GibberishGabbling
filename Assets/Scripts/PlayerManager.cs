@@ -1,6 +1,8 @@
+using FishNet.Connection;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
 {
@@ -13,6 +15,18 @@ public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
 
     [SerializeField]
     private TextMeshProUGUI playersInLobbyText;
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        Debug.Log("Spawned the PlayerManager");
+        gameObject.SetActive(true);
+    }
+
+    public override void OnSpawnServer(NetworkConnection connection)
+    {
+        base.OnSpawnServer(connection);
+    }
 
     public void PlayerJoined(PlayerId playerid)
     {

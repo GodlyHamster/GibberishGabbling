@@ -1,9 +1,12 @@
 using UnityEngine;
 using FishNet.Object;
 
+[RequireComponent(typeof(AudioSource))]
 public class PlayerInteraction : NetworkBehaviour
 {
     PlayerId playerId;
+
+    private AudioSource _questionAudio;
 
     public override void OnStartClient()
     {
@@ -12,6 +15,7 @@ public class PlayerInteraction : NetworkBehaviour
         {
             this.enabled = false;
         }
+        _questionAudio = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -23,15 +27,15 @@ public class PlayerInteraction : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            QuizManager.Instance.AnswerQuestion(playerId, 1);
+            QuizManager.Instance.AnswerQuestionServer(playerId, 1);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            QuizManager.Instance.AnswerQuestion(playerId, 2);
+            QuizManager.Instance.AnswerQuestionServer(playerId, 2);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            QuizManager.Instance.AnswerQuestion(playerId, 3);
+            QuizManager.Instance.AnswerQuestionServer(playerId, 3);
         }
     }
 }

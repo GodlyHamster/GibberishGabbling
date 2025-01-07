@@ -1,3 +1,4 @@
+using FishNet.Object;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -45,7 +46,13 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         doCountDown = true;
     }
 
-    public void AnswerQuestion(PlayerId playerId, int answer)
+    [ServerRpc(RequireOwnership = false)]
+    public void AnswerQuestionServer(PlayerId playerId, int answer)
+    {
+        AnswerQuestion(playerId, answer);
+    }
+    [ObserversRpc]
+    private void AnswerQuestion(PlayerId playerId, int answer)
     {
         if (!playerAnswers.ContainsKey(playerId))
         {
@@ -59,8 +66,14 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         Debug.Log($"Player{playerId.Id} answered {answer}");
     }
 
+    public AudioClip GetQuestionAudio(PlayerId playerId)
+    {
+        return questions[currentQuestion].audioclips[playerId.Id];
+    }
+
     private bool AnsweredQuestionCorrectly()
     {
+        if (playerAnswers.Count == 0 ) return false;
         int correctAnswers = 0;
         foreach (KeyValuePair<PlayerId, int> item in playerAnswers)
         {
@@ -79,6 +92,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
 
     private void Update()
     {
+        if (currentQuestion >= questions.Count) return;
         if (doCountDown)
         {
             countDown -= Time.deltaTime;
