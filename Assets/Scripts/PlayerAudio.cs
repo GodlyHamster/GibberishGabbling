@@ -1,4 +1,3 @@
-using FishNet.Demo.AdditiveScenes;
 using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,9 +17,10 @@ public class PlayerAudio : NetworkBehaviour
         base.OnStartClient();
         if (!base.IsOwner)
         {
-            this.enabled = false;
+            GetComponent<AudioSource>().volume = 0f;
         }
     }
+
     private void Start()
     {
         playerId = GetComponent<PlayerId>();
@@ -28,10 +28,12 @@ public class PlayerAudio : NetworkBehaviour
 
         QuizManager.Instance.OnShowStory.AddListener(GetAndPlayAudio);
         QuizManager.Instance.OnShowQuestion.AddListener(GetAndPlayAudio);
+        Debug.Log("added listeners");
     }
 
     private void GetAndPlayAudio()
     {
+        Debug.Log($"{playerId.Id}'s clip is {_questionAudio.clip}");
         _questionAudio.clip = QuizManager.Instance.GetStoryAudio(playerId);
         _questionAudio.Play();
     }
@@ -39,7 +41,8 @@ public class PlayerAudio : NetworkBehaviour
     private void Update()
     {
         if (_questionAudio.clip == null) return;
-        if (_questionAudio.time >= _questionAudio.clip.length)
+        Debug.Log(_questionAudio.time + "/" + _questionAudio.clip.length);
+        if (!_questionAudio.isPlaying)
         {
             finishedAudio = true;
         }

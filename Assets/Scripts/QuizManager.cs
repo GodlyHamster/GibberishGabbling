@@ -46,7 +46,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         countDown = questions[questionNumber].storyDisplayTime;
         currentlyOnQuestion = false;
         doCountDown = true;
-        OnShowStory.Invoke();
+        ShowStory();
         StartCoroutine(WaitUntilAllClipsFinished());
     }
 
@@ -64,6 +64,12 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         doCountDown = true;
         OnShowQuestion.Invoke();
         StartCoroutine(WaitUntilAllClipsFinished());
+    }
+
+    [ObserversRpc]
+    private void ShowStory()
+    {
+        OnShowStory.Invoke();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -93,6 +99,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
 
     public AudioClip GetStoryAudio(PlayerId playerId)
     {
+        questionText.text += $"{playerId.Id} is listening to {questions[currentQuestion].audioclips[playerId.Id]}";
         return questions[currentQuestion].audioclips[playerId.Id];
     }
 
@@ -129,6 +136,8 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         }
         else
         {
+            Debug.Log("time to discuss");
+            yield return new WaitForSeconds(10f);
             DisplayQuestion(currentQuestion);
         }
     }
