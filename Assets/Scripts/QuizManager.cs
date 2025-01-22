@@ -12,9 +12,6 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
     [SerializeField]
     private float answeringTime = 10f;
 
-    private float countDown;
-    private bool doCountDown = false;
-
     private bool currentlyOnQuestion = false;
 
     [SerializeField]
@@ -43,9 +40,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         if (questionNumber >= questions.Count) return;
 
         questionText.text = $"{questions[questionNumber].story}";
-        countDown = questions[questionNumber].storyDisplayTime;
         currentlyOnQuestion = false;
-        doCountDown = true;
         ShowStory();
         StartCoroutine(WaitUntilAllClipsFinished());
     }
@@ -59,9 +54,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         {
             questionText.text += $"{i+1}: {questions[questionNumber].answers[i]}\n";
         }
-        countDown = answeringTime;
         currentlyOnQuestion = true;
-        doCountDown = true;
         OnShowQuestion.Invoke();
         StartCoroutine(WaitUntilAllClipsFinished());
     }
@@ -99,7 +92,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
 
     public AudioClip GetStoryAudio(PlayerId playerId)
     {
-        questionText.text += $"{playerId.Id} is listening to {questions[currentQuestion].audioclips[playerId.Id]}";
+        //questionText.text += $"{playerId.Id} is listening to {questions[currentQuestion].audioclips[playerId.Id]}";
         return questions[currentQuestion].audioclips[playerId.Id];
     }
 
@@ -125,11 +118,13 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
     private IEnumerator WaitUntilAllClipsFinished()
     {
         Debug.Log("waiting");
+        yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => playerAudioList.TrueForAll(a => a.finishedAudio));
         Debug.Log("finished waiting");
 
         if (currentlyOnQuestion)
         {
+            yield return new WaitForSeconds(answeringTime);
             Debug.Log(AnsweredQuestionCorrectly());
             currentQuestion++;
             DisplayStory(currentQuestion);
@@ -137,8 +132,15 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         else
         {
             Debug.Log("time to discuss");
-            yield return new WaitForSeconds(10f);
-            DisplayQuestion(currentQuestion);
+            if (questions[currentQuestion].hasNoAnswer)
+            {
+                currentQuestion++;
+                DisplayStory(currentQuestion);
+            }
+            else
+            {
+                DisplayQuestion(currentQuestion);
+            }
         }
     }
 }

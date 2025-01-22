@@ -302,7 +302,7 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 450207985}
   _networkObjectCache: {fileID: 0}
-  <maxPlayers>k__BackingField: 2
+  <maxPlayers>k__BackingField: 1
   playersInLobbyText: {fileID: 698917554}
 --- !u!1001 &508482057
 PrefabInstance:
@@ -716,27 +716,53 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 740575276}
   _networkObjectCache: {fileID: 0}
   questions:
-  - question: Wie is het dikst?
+  - question: Did you understand the aliens
     audioclips:
     - {fileID: 8300000, guid: 24bdabf1534c38847a326046101353c7, type: 3}
-    - {fileID: 8300000, guid: a02bf1c548cf84f4fa952ce5369adc48, type: 3}
+    - {fileID: 8300000, guid: d19e3b1a08b3a674a8f1385c8d1e2ed8, type: 3}
     answers:
-    - Ik
-    - Jij
-    - Iedereen hier
-    rightAnswer: 3
-    story: Joost weegt 80Kg, en jij weeg 40Kg.
+    - Yes
+    - A little
+    - Not at all
+    hasNoAnswer: 1
+    rightAnswer: 1
+    story: Introduction Audio
     storyDisplayTime: 10
-  - question: Joost is...
+  - question: What do the aliens want
+    audioclips:
+    - {fileID: 8300000, guid: a02bf1c548cf84f4fa952ce5369adc48, type: 3}
+    - {fileID: 8300000, guid: ba672cee9ea30304caa55c6472de6baa, type: 3}
+    answers:
+    - Take over the world
+    - Food
+    - Eat dogs
+    hasNoAnswer: 0
+    rightAnswer: 2
+    story: Question 1
+    storyDisplayTime: 10
+  - question: What food do they want
     audioclips:
     - {fileID: 8300000, guid: 58ca78053860a89408cb5ffb87358cf2, type: 3}
-    - {fileID: 8300000, guid: c7d77733b40af58479f9354ceb28cf2b, type: 3}
+    - {fileID: 8300000, guid: 38c300dc5c1a31643957756f65542b4c, type: 3}
     answers:
-    - Gezellig
-    - Een alcoholist
-    - Bier
-    rightAnswer: 2
-    story: Joost is gezellig en drinkt elke dag 5 biertjes.
+    - Humans
+    - Donuts
+    - Pizzas
+    hasNoAnswer: 0
+    rightAnswer: 3
+    story: Question 2
+    storyDisplayTime: 10
+  - question: What kind of pizza do they want
+    audioclips:
+    - {fileID: 8300000, guid: c7d77733b40af58479f9354ceb28cf2b, type: 3}
+    - {fileID: 8300000, guid: eebcc0c915161154688aade60b0c56ae, type: 3}
+    answers:
+    - Salami
+    - Hawaii
+    - Fungi
+    hasNoAnswer: 0
+    rightAnswer: 3
+    story: Question 3
     storyDisplayTime: 10
   answeringTime: 10
   questionText: {fileID: 1667639690}

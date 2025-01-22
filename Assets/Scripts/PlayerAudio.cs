@@ -27,8 +27,7 @@ public class PlayerAudio : NetworkBehaviour
         _questionAudio = GetComponent<AudioSource>();
 
         QuizManager.Instance.OnShowStory.AddListener(GetAndPlayAudio);
-        QuizManager.Instance.OnShowQuestion.AddListener(GetAndPlayAudio);
-        Debug.Log("added listeners");
+        //QuizManager.Instance.OnShowQuestion.AddListener(GetAndPlayAudio);
     }
 
     private void GetAndPlayAudio()
@@ -41,7 +40,7 @@ public class PlayerAudio : NetworkBehaviour
     private void Update()
     {
         if (_questionAudio.clip == null) return;
-        Debug.Log(_questionAudio.time + "/" + _questionAudio.clip.length);
+        //Debug.Log(_questionAudio.time + "/" + _questionAudio.clip.length);
         if (!_questionAudio.isPlaying)
         {
             finishedAudio = true;
