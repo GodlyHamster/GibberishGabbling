@@ -25,6 +25,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
 
     public UnityEvent OnShowStory = new UnityEvent();
     public UnityEvent OnShowQuestion = new UnityEvent();
+    public UnityEvent<List<AudioClip>, bool> OnPlayAudioClip = new UnityEvent<List<AudioClip>, bool>();
 
     public void StartGame()
     {
@@ -32,6 +33,7 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         {
             playerAudioList.Add(player.gameObject.GetComponent<PlayerAudio>());
         }
+        currentQuestion = 0;
         DisplayStory(currentQuestion);
     }
 
@@ -49,20 +51,20 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
     {
         if (questionNumber >= questions.Count) return;
 
-        questionText.text = $"{questions[questionNumber].question}\n\n";
-        for (int i = 0; i < questions[questionNumber].answers.Count; i++)
-        {
-            questionText.text += $"{i+1}: {questions[questionNumber].answers[i]}\n";
-        }
+        //questionText.text = $"{questions[questionNumber].question}\n\n";
+        //for (int i = 0; i < questions[questionNumber].answers.Count; i++)
+        //{
+        //    questionText.text += $"{i+1}: {questions[questionNumber].answers[i]}\n";
+        //}
         currentlyOnQuestion = true;
-        OnShowQuestion.Invoke();
+        OnPlayAudioClip.Invoke(questions[currentQuestion].audioClips, true);
         StartCoroutine(WaitUntilAllClipsFinished());
     }
 
     [ObserversRpc]
     private void ShowStory()
     {
-        OnShowStory.Invoke();
+        OnPlayAudioClip.Invoke(questions[currentQuestion].audioClips, false);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -87,13 +89,13 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
 
     public AudioClip GetQuestionAudio(PlayerId playerId)
     {
-        return questions[currentQuestion].audioclips[playerId.Id];
+        return questions[currentQuestion].audioClips[playerId.Id];
     }
 
     public AudioClip GetStoryAudio(PlayerId playerId)
     {
         //questionText.text += $"{playerId.Id} is listening to {questions[currentQuestion].audioclips[playerId.Id]}";
-        return questions[currentQuestion].audioclips[playerId.Id];
+        return questions[currentQuestion].audioClips[playerId.Id];
     }
 
     private bool AnsweredQuestionCorrectly()

@@ -83,6 +83,10 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 493989439058546309}
   _networkObjectCache: {fileID: 0}
+  pressNumberFor:
+  - {fileID: 8300000, guid: c9fb016ab2f5e714f82a4ba6d6f1e315, type: 3}
+  - {fileID: 8300000, guid: 517bb499149c32c41b88ab3af971d1c7, type: 3}
+  - {fileID: 8300000, guid: e945ddbe89385694cb18f5f7a6dbcf7e, type: 3}
 --- !u!114 &493989439058546309
 MonoBehaviour:
   m_ObjectHideFlags: 0

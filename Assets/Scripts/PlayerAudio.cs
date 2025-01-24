@@ -6,11 +6,14 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class PlayerAudio : NetworkBehaviour
 {
+    [SerializeField]
+    private List<AudioClip> pressNumberFor;
+
     PlayerId playerId;
 
     private AudioSource _questionAudio;
 
-    public bool finishedAudio { get; private set; }
+    public bool finishedAudio { get; private set; } = false;
 
     public override void OnStartClient()
     {
@@ -26,28 +29,45 @@ public class PlayerAudio : NetworkBehaviour
         playerId = GetComponent<PlayerId>();
         _questionAudio = GetComponent<AudioSource>();
 
-        QuizManager.Instance.OnShowStory.AddListener(GetAndPlayAudio);
-        //QuizManager.Instance.OnShowQuestion.AddListener(GetAndPlayAudio);
+        QuizManager.Instance.OnPlayAudioClip.AddListener(PlayAudio);
     }
 
-    private void GetAndPlayAudio()
+    private void PlayAudio(List<AudioClip> audioclips, bool isQuestionAudio)
     {
-        Debug.Log($"{playerId.Id}'s clip is {_questionAudio.clip}");
-        _questionAudio.clip = QuizManager.Instance.GetStoryAudio(playerId);
-        _questionAudio.Play();
-    }
-
-    private void Update()
-    {
-        if (_questionAudio.clip == null) return;
-        //Debug.Log(_questionAudio.time + "/" + _questionAudio.clip.length);
-        if (!_questionAudio.isPlaying)
+        if (isQuestionAudio)
         {
-            finishedAudio = true;
+            StartCoroutine(PlayQuestionAudio(audioclips.ToArray()));
         }
         else
         {
-            finishedAudio = false;
+            StartCoroutine(PlayStoryAudio(audioclips[playerId.Id]));
         }
+    }
+
+    private IEnumerator PlayStoryAudio(AudioClip clip)
+    {
+        finishedAudio = false;
+        _questionAudio.clip = clip;
+        _questionAudio.Play();
+        yield return new WaitUntil(() => !_questionAudio.isPlaying);
+        finishedAudio = true;
+        yield return null;
+    }
+
+    private IEnumerator PlayQuestionAudio(AudioClip[] audioclips)
+    {
+        finishedAudio = false;
+        int index = 0;
+        foreach (AudioClip clip in audioclips)
+        {
+            _questionAudio.clip = pressNumberFor[index];
+            _questionAudio.Play();
+            yield return new WaitUntil(() => !_questionAudio.isPlaying);
+            _questionAudio.clip = clip;
+            _questionAudio.Play();
+            yield return new WaitUntil(() => !_questionAudio.isPlaying);
+        }
+        finishedAudio = true;
+        yield return null;
     }
 }
