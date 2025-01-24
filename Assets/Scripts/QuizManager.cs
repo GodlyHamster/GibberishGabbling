@@ -41,7 +41,6 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
     {
         if (questionNumber >= questions.Count) return;
 
-        questionText.text = $"{questions[questionNumber].story}";
         currentlyOnQuestion = false;
         ShowStory();
         StartCoroutine(WaitUntilAllClipsFinished());
@@ -51,13 +50,8 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
     {
         if (questionNumber >= questions.Count) return;
 
-        //questionText.text = $"{questions[questionNumber].question}\n\n";
-        //for (int i = 0; i < questions[questionNumber].answers.Count; i++)
-        //{
-        //    questionText.text += $"{i+1}: {questions[questionNumber].answers[i]}\n";
-        //}
         currentlyOnQuestion = true;
-        OnPlayAudioClip.Invoke(questions[currentQuestion].audioClips, true);
+        OnPlayAudioClip.Invoke(questions[currentQuestion].answerClips, true);
         StartCoroutine(WaitUntilAllClipsFinished());
     }
 

@@ -66,6 +66,7 @@ public class PlayerAudio : NetworkBehaviour
             _questionAudio.clip = clip;
             _questionAudio.Play();
             yield return new WaitUntil(() => !_questionAudio.isPlaying);
+            index++;
         }
         finishedAudio = true;
         yield return null;

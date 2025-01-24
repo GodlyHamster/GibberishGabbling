@@ -10,6 +10,4 @@ public class Question
     public List<string> answers = new List<string>(3);
     public bool hasNoAnswer = false;
     public int rightAnswer;
-    public string story;
-    public float storyDisplayTime;
 }
