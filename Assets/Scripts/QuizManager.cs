@@ -1,6 +1,7 @@
 using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,18 +15,13 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
 
     private bool currentlyOnQuestion = false;
 
-    [SerializeField]
-    private TextMeshProUGUI questionText;
-
     private List<PlayerAudio> playerAudioList = new List<PlayerAudio>();
 
     private Dictionary<PlayerId, int> playerAnswers = new Dictionary<PlayerId, int>();
 
     public int currentQuestion { get; private set; } = 0;
 
-    public UnityEvent OnShowStory = new UnityEvent();
-    public UnityEvent OnShowQuestion = new UnityEvent();
-    public UnityEvent<List<AudioClip>, bool> OnPlayAudioClip = new UnityEvent<List<AudioClip>, bool>();
+    public UnityEvent<AudioClip[], bool> OnPlayAudioClip = new UnityEvent<AudioClip[], bool>();
 
     public void StartGame()
     {
@@ -51,14 +47,14 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         if (questionNumber >= questions.Count) return;
 
         currentlyOnQuestion = true;
-        OnPlayAudioClip.Invoke(questions[currentQuestion].answerClips, true);
+        OnPlayAudioClip.Invoke(questions[currentQuestion].answerClips.ToArray(), true);
         StartCoroutine(WaitUntilAllClipsFinished());
     }
 
     [ObserversRpc]
     private void ShowStory()
     {
-        OnPlayAudioClip.Invoke(questions[currentQuestion].audioClips, false);
+        OnPlayAudioClip.Invoke(questions[currentQuestion].audioClips.ToArray(), false);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -77,19 +73,6 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         {
             playerAnswers[playerId] = answer;
         }
-
-        Debug.Log($"Player{playerId.Id} answered {answer}");
-    }
-
-    public AudioClip GetQuestionAudio(PlayerId playerId)
-    {
-        return questions[currentQuestion].audioClips[playerId.Id];
-    }
-
-    public AudioClip GetStoryAudio(PlayerId playerId)
-    {
-        //questionText.text += $"{playerId.Id} is listening to {questions[currentQuestion].audioclips[playerId.Id]}";
-        return questions[currentQuestion].audioClips[playerId.Id];
     }
 
     private bool AnsweredQuestionCorrectly()
@@ -98,7 +81,6 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         int correctAnswers = 0;
         foreach (KeyValuePair<PlayerId, int> item in playerAnswers)
         {
-            Debug.Log($"{item.Key.Id} answered {item.Value} and correct answer is {questions[currentQuestion].rightAnswer}");
             if (item.Value == questions[currentQuestion].rightAnswer)
             {
                 correctAnswers++;
@@ -111,23 +93,39 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         return false;
     }
 
-    private IEnumerator WaitUntilAllClipsFinished()
+    private IEnumerator FailedGame()
     {
-        Debug.Log("waiting");
+        List<AudioClip> wrongAnswers = new List<AudioClip>();
+        for (int i = 0; i < playerAudioList.Count; i++)
+        {
+            wrongAnswers.Add(questions[currentQuestion].wrongAnswerClip);
+        }
+        OnPlayAudioClip.Invoke(wrongAnswers.ToArray(), false);
         yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => playerAudioList.TrueForAll(a => a.finishedAudio));
-        Debug.Log("finished waiting");
+        StartGame();
+    }
+
+    private IEnumerator WaitUntilAllClipsFinished()
+    {
+        yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(() => playerAudioList.TrueForAll(a => a.finishedAudio));
 
         if (currentlyOnQuestion)
         {
             yield return new WaitForSeconds(answeringTime);
             Debug.Log(AnsweredQuestionCorrectly());
+            if (!AnsweredQuestionCorrectly())
+            {
+                StartCoroutine(FailedGame());
+                yield return null;
+                yield break;
+            }
             currentQuestion++;
             DisplayStory(currentQuestion);
         }
         else
         {
-            Debug.Log("time to discuss");
             if (questions[currentQuestion].hasNoAnswer)
             {
                 currentQuestion++;

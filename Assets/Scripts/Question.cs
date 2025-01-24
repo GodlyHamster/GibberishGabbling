@@ -7,7 +7,7 @@ public class Question
     public string question;
     public List<AudioClip> audioClips;
     public List<AudioClip> answerClips;
-    public List<string> answers = new List<string>(3);
+    public AudioClip wrongAnswerClip;
     public bool hasNoAnswer = false;
     public int rightAnswer;
 }

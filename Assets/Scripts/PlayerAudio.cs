@@ -32,11 +32,11 @@ public class PlayerAudio : NetworkBehaviour
         QuizManager.Instance.OnPlayAudioClip.AddListener(PlayAudio);
     }
 
-    private void PlayAudio(List<AudioClip> audioclips, bool isQuestionAudio)
+    private void PlayAudio(AudioClip[] audioclips, bool isQuestionAudio)
     {
         if (isQuestionAudio)
         {
-            StartCoroutine(PlayQuestionAudio(audioclips.ToArray()));
+            StartCoroutine(PlayQuestionAudio(audioclips));
         }
         else
         {
