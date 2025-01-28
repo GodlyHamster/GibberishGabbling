@@ -30,6 +30,12 @@ public class PlayerAudio : NetworkBehaviour
         _questionAudio = GetComponent<AudioSource>();
 
         QuizManager.Instance.OnPlayAudioClip.AddListener(PlayAudio);
+        QuizManager.Instance.OnPlayRandomClip.AddListener(PlayRandomClip);
+    }
+
+    private void PlayRandomClip(AudioClip[] clips)
+    {
+        StartCoroutine(PlayStoryAudio(clips[Random.Range(0, clips.Length)]));
     }
 
     private void PlayAudio(AudioClip[] audioclips, bool isQuestionAudio)

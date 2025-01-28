@@ -1,6 +1,7 @@
 using FishNet.Transporting.Tugboat;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using TMPro;
 using UnityEngine;
 
 public class TugboatIpSetter : MonoBehaviour
@@ -8,13 +9,25 @@ public class TugboatIpSetter : MonoBehaviour
     [SerializeField]
     private Tugboat tugboat;
 
+    [SerializeField]
+    private TMP_InputField ipInput;
+    [SerializeField]
+    private TextMeshProUGUI yourIPText;
+
     void Start()
     {
         string ipv4 = IPManager.GetIP(ADDRESSFAM.IPv4);
 
-        Debug.Log(ipv4);
+        ipInput.onValueChanged.AddListener(SetIp);
+
+        yourIPText.text = $"your address:\n {ipv4}";
         tugboat.SetServerBindAddress(ipv4, FishNet.Transporting.IPAddressType.IPv4);
         tugboat.SetClientAddress(ipv4);
+    }
+
+    private void SetIp(string newIp)
+    {
+        tugboat.SetClientAddress(newIp);
     }
 }
 

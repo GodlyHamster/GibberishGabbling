@@ -19,7 +19,6 @@ public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
     public override void OnStartServer()
     {
         base.OnStartServer();
-        Debug.Log("Spawned the PlayerManager");
         gameObject.SetActive(true);
     }
 
@@ -33,10 +32,10 @@ public class PlayerManager : AbstractNetworkSingleton<PlayerManager>
         _players.Add(playerid);
         Debug.Log($"player{playerid.Id} joined the game");
         UpdateLobbyText();
-        if (_players.Count == maxPlayers)
-        {
-            QuizManager.Instance.StartGame();
-        }
+        //if (_players.Count == maxPlayers)
+        //{
+        //    QuizManager.Instance.StartGame();
+        //}
     }
 
     private void UpdateLobbyText()
