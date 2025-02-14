@@ -70,25 +70,25 @@ public class QuizManager : AbstractNetworkSingleton<QuizManager>
         ShowQuestion();
     }
 
-    [ObserversRpc(RunLocally = true)]
+    [ObserversRpc]
     private void ShowQuestion()
     {
         OnPlayAudioClip.Invoke(questions[currentQuestion].answerClips.ToArray(), true);
     }
 
-    [ServerRpc(RequireOwnership = false, RunLocally = true)]
+    [ServerRpc(RequireOwnership = false)]
     private void ShowStoryServer()
     {
         ShowStory();
     }
 
-    [ObserversRpc(RunLocally = true)]
+    [ObserversRpc]
     private void ShowStory()
     {
         OnPlayAudioClip.Invoke(questions[currentQuestion].audioClips.ToArray(), false);
     }
 
-    [ServerRpc(RequireOwnership = false, RunLocally = true)]
+    [ServerRpc(RequireOwnership = false)]
     public void AnswerQuestionServer(PlayerId playerId, int answer)
     {
         AnswerQuestion(playerId, answer);
